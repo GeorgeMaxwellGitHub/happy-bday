@@ -28,14 +28,37 @@
     overflow: hidden;
   }
 
-  /* ─── PAW TRAIL CANVAS ─── */
-  #pawCanvas {
+  /* ─── PAW TRAIL ─── */
+  #pawLayer {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
     pointer-events: none;
     z-index: 1000;
+    overflow: hidden;
   }
+  .paw {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    opacity: 0;
+    transform: scale(0.3) rotate(var(--rot, 0deg));
+    pointer-events: none;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+  .paw.show {
+    opacity: 0.6;
+    transform: scale(1) rotate(var(--rot, 0deg));
+  }
+  .paw.fade {
+    opacity: 0;
+    transition: opacity 3s ease-out;
+  }
+  .paw.snap-out {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+  }
+  .paw svg { width: 100%; height: 100%; display: block; }
 
   /* ─── CONFETTI ─── */
   #confettiCanvas {
@@ -315,7 +338,10 @@
 
   /* ─── RUNAWAY BUTTON ─── */
   #btnRunaway {
-    position: absolute;
+    position: fixed;
+    z-index: 600;
+    transition: left 0.25s ease, top 0.25s ease;
+    display: none;
   }
 
   .page-7-inner {
@@ -336,7 +362,7 @@
 <div class="deco deco-2"></div>
 <div class="deco deco-3"></div>
 
-<canvas id="pawCanvas"></canvas>
+<div id="pawLayer"></div>
 <canvas id="confettiCanvas"></canvas>
 
 <div class="page-indicator" id="pageIndicator">1 / 8</div>
@@ -346,7 +372,7 @@
   <h1>Лилит хочет поздравить тебя с Днём Рождения!</h1>
   <!-- ЗАМЕНИ src на реальный путь к фото Лилит -->
   <img class="cat-photo" src="LILITH_PHOTO_1.jpg" alt="Лилит" id="lilithP1" onclick="meow()">
-  <p class="sub">нажми на мяукалку 🐾</p>
+  <p class="sub">Нажми на мяукалку 🐾</p>
   <button class="btn btn-primary" onclick="goTo(2)">Хоосё 🐱</button>
 </div>
 
@@ -386,31 +412,33 @@
 
 <!-- ═══ PAGE 4 ═══ -->
 <div class="page" id="p4">
-  <h2>А где тут спрятана наша коська? 🔍</h2>
-  <!-- ЗАМЕНИ src на фото Лилит на кровати -->
-  <img class="photo-rect" src="LILITH_PHOTO_BED.jpg" alt="Лилит на кровати">
-  <div class="options">
-    <button class="opt" onclick="quiz4(this)">Коська на кровате! 🛏️</button>
-    <button class="opt" onclick="quiz4(this)">Кошечка на кроватке! 😍</button>
-    <button class="opt" onclick="quiz4(this)">Да она же тут! 👀</button>
+  <h2 id="p4Title">Опа, а кто тут спрятался? 👀</h2>
+  <img class="photo-rect" id="p4Image" src="lilith-bed-1.jpg" alt="Кто-то спрятался">
+  <div class="options" id="p4Options">
+    <button class="opt" onclick="quiz4(this)">Демогоргон 👹</button>
+    <button class="opt" onclick="quiz4(this)">Зепа 🐲</button>
+    <button class="opt" onclick="quiz4(this)">Кока 🍫</button>
+    <button class="opt" onclick="quiz4(this)">Лилиль 🐱</button>
   </div>
   <div class="bubble" id="bubble4"></div>
+  <button class="btn btn-primary" id="p4Next" style="display:none;" onclick="goTo(5)">Дальше 💜</button>
 </div>
 
 <!-- ═══ PAGE 5 ═══ -->
 <div class="page" id="p5">
-  <h2>А кто тут самая красивая красотка, самая лучшая жена и кошачья мама?? 🥹</h2>
-  <div class="btn-row" style="position:relative;min-height:120px;width:100%;max-width:320px;" id="p5area">
-    <button class="btn btn-primary" style="width:100%;" onclick="goTo(6)">Я тут! 🙋‍♀️</button>
-    <button class="btn btn-secondary" id="btnRunaway" onclick="runaway()">Ненаю (</button>
+  <h2 id="p5Title">А кто тут самая красивая красотка, самая лучшая жена и кошачья мама?? 🥹</h2>
+  <div class="btn-row" id="p5btnrow">
+    <button class="btn btn-primary" id="btnYaTut" style="width:100%;" onclick="goTo(6)">Я тут! 🙋‍♀️</button>
   </div>
+  <!-- Кнопка-беглец живёт в фиксированном слое, появляется где угодно на экране -->
+  <button class="btn btn-secondary" id="btnRunaway" onclick="runaway()">Ненаю (</button>
 </div>
 
 <!-- ═══ PAGE 6 ═══ -->
 <div class="page" id="p6">
   <h1>УРА!!!! 🎉</h1>
   <h2>С Днём Рождения, любимая! 🎂</h2>
-  <p class="sub">Ты лучшая! И Лилит тоже так считает 🐾</p>
+  <p class="sub">Я люблю тебя! Я хочу подарить тебе мир, все рассветы и самые высокие горы — ты умничка и самая весёлая коська :3</p>
   <button class="btn btn-primary" onclick="goTo(7)" style="margin-top:8px;">Хочу подарок 🎁</button>
 </div>
 
@@ -433,8 +461,8 @@
   <!-- ЗАМЕНИ src на фото подарка -->
   <img id="giftImg" src="GIFT_PHOTO.jpg" alt="Подарок">
   <div class="love-note" id="loveNote">
-    Настюш, ты лучшее, что есть в моей жизни.<br>
-    Спасибо, что ты есть — и я, и Лилит тебя обожаем. 🐾💜
+    Киса, ты лучшее, что есть в моей жизни.<br>
+    Спасибо, что ты есть — я тебя обожаю 🐾💜
   </div>
 </div>
 
@@ -459,6 +487,13 @@ function goTo(n) {
   document.getElementById('pageIndicator').textContent = n + ' / ' + TOTAL_PAGES;
   spawnPaws();
   if (n === 2) initSlider();
+  if (n === 5) {
+    document.getElementById('btnRunaway').style.display = 'inline-block';
+    // Размещаем после рендера, чтобы знать размеры заголовка и кнопки
+    setTimeout(placeRunaway, 50);
+  } else {
+    document.getElementById('btnRunaway').style.display = 'none';
+  }
   if (n === 6) startConfetti();
   if (n === 8) revealGift();
 }
@@ -503,10 +538,7 @@ function initSlider() {
     d.onclick = () => slideTo(i);
     dots.appendChild(d);
   }
-  // Auto-advance
-  if (!window._sliderTimer) {
-    window._sliderTimer = setInterval(() => slide(1), 3000);
-  }
+  // Авто-переключение отключено — пользователь сам листает
 }
 function slide(dir) {
   sliderIndex = (sliderIndex + dir + SLIDE_COUNT) % SLIDE_COUNT;
@@ -521,22 +553,46 @@ function slideTo(i) {
 }
 
 // ═══ QUIZ 3 ═══
+const WRONG_MESSAGES_3 = [
+  '❌ Нет-нет-нет... попробуй ещё разок!',
+  '🙅‍♀️ Не-а! Подумай ещё, красотка!',
+  '😹 Лилит говорит — мимо! Попробуй снова',
+  '🤔 Хмм, точно не то... ещё разок?',
+  '💜 Близко, но не то! Дай ещё попытку',
+  '🐾 Лилиль не согласна! Попробуй ещё',
+  '🙈 Ой, мимо! Но ты умничка, попробуй ещё',
+  '✨ Не угадала! Но я в тебя верю — давай ещё',
+  '🫣 Эээ нет, это что-то другое...',
+  '😼 Кошачья интуиция говорит — нет!',
+];
+
 function quiz3(btn, correct) {
   const bubble = document.getElementById('bubble3');
-  document.querySelectorAll('#p3 .opt').forEach(b => b.disabled = true);
   if (correct) {
+    document.querySelectorAll('#p3 .opt').forEach(b => b.disabled = true);
     btn.classList.add('correct');
     bubble.textContent = '✅ Правильно! Конечно, это Звёздочка — прямо как ты! ⭐';
     bubble.classList.add('show');
     setTimeout(() => goTo(4), 1400);
   } else {
+    // Не блокируем остальные кнопки — можно тыкать дальше, пока висит сообщение
     btn.classList.add('wrong');
-    bubble.textContent = '❌ Нет-нет-нет... попробуй ещё разок!';
+    btn.disabled = true; // только эту блокируем, чтобы по той же не тыкать
+    const msg = WRONG_MESSAGES_3[Math.floor(Math.random() * WRONG_MESSAGES_3.length)];
+    bubble.textContent = msg;
     bubble.classList.add('show');
+
+    // Сбрасываем визуальное состояние кнопки через 3 сек
     setTimeout(() => {
-      document.querySelectorAll('#p3 .opt').forEach(b => { b.disabled = false; b.classList.remove('wrong'); });
+      btn.classList.remove('wrong');
+      btn.disabled = false;
+    }, 3000);
+
+    // Скрываем bubble через 3 сек — но только если за это время не появилось новое сообщение
+    clearTimeout(window._bubble3Timer);
+    window._bubble3Timer = setTimeout(() => {
       bubble.classList.remove('show');
-    }, 900);
+    }, 3000);
   }
 }
 
@@ -545,29 +601,53 @@ function quiz4(btn) {
   document.querySelectorAll('#p4 .opt').forEach(b => b.disabled = true);
   btn.classList.add('correct');
   const bubble = document.getElementById('bubble4');
-  bubble.textContent = '✅ Нашла! Умница! 🥰';
+  bubble.textContent = '✅ Правильно! Это наша Лилиль! 🥰';
   bubble.classList.add('show');
-  setTimeout(() => goTo(5), 1400);
+  // Через секунду — меняем фотку на крупный план Лилит
+  setTimeout(() => {
+    document.getElementById('p4Image').src = 'lilith-bed-2.jpg';
+    document.getElementById('p4Title').textContent = 'Вот она, наша красотка! 💜';
+    document.getElementById('p4Options').style.display = 'none';
+    document.getElementById('p4Next').style.display = 'inline-block';
+  }, 1200);
 }
 
 // ═══ RUNAWAY BUTTON ═══
-let runawayCount = 0;
-function runaway() {
-  runawayCount++;
-  const area = document.getElementById('p5area');
+function rectsOverlap(a, b, pad = 12) {
+  return !(a.right + pad < b.left || a.left > b.right + pad ||
+           a.bottom + pad < b.top || a.top > b.bottom + pad);
+}
+
+function placeRunaway() {
   const btn = document.getElementById('btnRunaway');
-  const aw = area.offsetWidth;
-  const ah = area.offsetHeight;
-  const bw = btn.offsetWidth;
-  const bh = btn.offsetHeight;
-  const maxX = aw - bw;
-  const maxY = ah - bh;
-  const rx = Math.random() * maxX;
-  const ry = Math.random() * maxY;
-  btn.style.position = 'absolute';
-  btn.style.left = rx + 'px';
-  btn.style.top = ry + 'px';
-  btn.style.margin = '0';
+  const title = document.getElementById('p5Title');
+  const yaTut = document.getElementById('btnYaTut');
+  const bw = btn.offsetWidth || 120;
+  const bh = btn.offsetHeight || 48;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  const titleRect = title.getBoundingClientRect();
+  const yaTutRect = yaTut.getBoundingClientRect();
+
+  // Пробуем до 50 раз найти позицию, которая не пересекается с заголовком и кнопкой "Я тут!"
+  for (let i = 0; i < 50; i++) {
+    const x = Math.random() * (vw - bw - 16) + 8;
+    const y = Math.random() * (vh - bh - 16) + 8;
+    const candidate = { left: x, top: y, right: x + bw, bottom: y + bh };
+    if (!rectsOverlap(candidate, titleRect) && !rectsOverlap(candidate, yaTutRect)) {
+      btn.style.left = x + 'px';
+      btn.style.top = y + 'px';
+      return;
+    }
+  }
+  // Fallback — углы экрана
+  btn.style.left = '8px';
+  btn.style.top = (vh - bh - 8) + 'px';
+}
+
+function runaway() {
+  placeRunaway();
 }
 
 // ═══ GIFT REVEAL ═══
@@ -632,92 +712,95 @@ function startConfetti() {
     if (confettiActive) requestAnimationFrame(draw);
   }
   draw();
-
-  setTimeout(() => {
-    confettiActive = false;
-    canvas.style.display = 'none';
-  }, 6000);
+  // Бесконечное конфетти — никогда не останавливаем
 }
 
-// ═══ PAW PRINTS ═══
-const pawCanvas = document.getElementById('pawCanvas');
-const pawCtx = pawCanvas.getContext('2d');
-pawCanvas.width = window.innerWidth;
-pawCanvas.height = window.innerHeight;
+// ═══ PAW PRINTS (DOM-based) ═══
+const pawLayer = document.getElementById('pawLayer');
+const PAW_COLORS = ['#c9b8e8', '#a68cc9', '#e8d5f5', '#b89dd9'];
+let activePaws = []; // отслеживаем активные лапки страницы
 
-function drawPaw(ctx, x, y, size, color) {
-  ctx.fillStyle = color;
-  ctx.globalAlpha = 0.55;
-  // Подушечка
-  ctx.beginPath();
-  ctx.ellipse(x, y, size * 0.55, size * 0.45, 0, 0, Math.PI * 2);
-  ctx.fill();
-  // 4 пальчика
-  const toes = [[-0.5, -0.85], [0, -0.95], [0.5, -0.85], [0.8, -0.55]];
-  toes.forEach(([dx, dy]) => {
-    ctx.beginPath();
-    ctx.ellipse(x + dx * size, y + dy * size, size * 0.25, size * 0.2, 0, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  ctx.globalAlpha = 1;
+// SVG лапки (4 пальчика + подушечка)
+function pawSVG(color) {
+  return `<svg viewBox="0 0 40 40" fill="${color}" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="20" cy="28" rx="9" ry="7"/>
+    <ellipse cx="9" cy="15" rx="3.5" ry="4.5"/>
+    <ellipse cx="16" cy="9" rx="3.5" ry="4.5"/>
+    <ellipse cx="24" cy="9" rx="3.5" ry="4.5"/>
+    <ellipse cx="31" cy="15" rx="3.5" ry="4.5"/>
+  </svg>`;
+}
+
+function spawnOnePaw(x, y, size = 36, rot = null) {
+  const paw = document.createElement('div');
+  paw.className = 'paw';
+  const color = PAW_COLORS[Math.floor(Math.random() * PAW_COLORS.length)];
+  const rotation = rot !== null ? rot : (Math.random() * 60 - 30);
+  paw.style.setProperty('--rot', rotation + 'deg');
+  paw.style.left = (x - size / 2) + 'px';
+  paw.style.top = (y - size / 2) + 'px';
+  paw.style.width = size + 'px';
+  paw.style.height = size + 'px';
+  paw.innerHTML = pawSVG(color);
+  pawLayer.appendChild(paw);
+  activePaws.push(paw);
+
+  // Появление
+  requestAnimationFrame(() => paw.classList.add('show'));
+
+  // Через ~1.2 сек начинаем долгий фейд (3 сек)
+  setTimeout(() => paw.classList.add('fade'), 1200);
+  // Удаляем элемент после полного фейда
+  setTimeout(() => {
+    paw.remove();
+    activePaws = activePaws.filter(p => p !== paw);
+  }, 1200 + 3200);
 }
 
 function spawnPaws() {
-  pawCtx.clearRect(0, 0, pawCanvas.width, pawCanvas.height);
-  const count = 8;
-  const colors = ['#c9b8e8', '#a68cc9', '#e8d5f5'];
+  // Мгновенно убираем все старые лапки от прошлой страницы
+  clearAllPaws();
+  // Создаём 12 новых лапок по всему экрану
+  const count = 12;
   for (let i = 0; i < count; i++) {
+    const delay = i * 60;
     setTimeout(() => {
-      const x = Math.random() * pawCanvas.width;
-      const y = Math.random() * pawCanvas.height;
-      const size = Math.random() * 14 + 10;
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      drawPaw(pawCtx, x, y, size, color);
-      setTimeout(() => {
-        // fade out
-        requestAnimationFrame(fadePaws);
-      }, 1200);
-    }, i * 80);
+      const x = Math.random() * (window.innerWidth - 40) + 20;
+      const y = Math.random() * (window.innerHeight - 40) + 20;
+      const size = Math.random() * 16 + 28; // 28-44px
+      spawnOnePaw(x, y, size);
+    }, delay);
   }
 }
 
-let fadingPaws = false;
-function fadePaws() {
-  if (fadingPaws) return;
-  fadingPaws = true;
-  let alpha = 1;
-  function step() {
-    alpha -= 0.04;
-    if (alpha <= 0) {
-      pawCtx.clearRect(0, 0, pawCanvas.width, pawCanvas.height);
-      fadingPaws = false;
-      return;
-    }
-    const img = pawCtx.getImageData(0, 0, pawCanvas.width, pawCanvas.height);
-    pawCtx.clearRect(0, 0, pawCanvas.width, pawCanvas.height);
-    pawCtx.globalAlpha = alpha;
-    pawCtx.putImageData(img, 0, 0);
-    pawCtx.globalAlpha = 1;
-    requestAnimationFrame(step);
-  }
-  step();
+function clearAllPaws() {
+  // Быстрый фейд + удаление
+  activePaws.forEach(paw => {
+    paw.classList.remove('fade');
+    paw.classList.add('snap-out');
+    setTimeout(() => paw.remove(), 320);
+  });
+  activePaws = [];
 }
 
 // ═══ RESIZE ═══
 window.addEventListener('resize', () => {
-  pawCanvas.width = window.innerWidth;
-  pawCanvas.height = window.innerHeight;
   const c = document.getElementById('confettiCanvas');
   c.width = window.innerWidth;
   c.height = window.innerHeight;
 });
 
-// Spawn paws on touch anywhere
+// Лапка при касании в любом месте
 document.addEventListener('touchstart', e => {
   const t = e.touches[0];
-  drawPaw(pawCtx, t.clientX, t.clientY, 14, '#c9b8e8');
-  setTimeout(() => fadePaws(), 800);
+  spawnOnePaw(t.clientX, t.clientY, 32);
 }, { passive: true });
+// На десктопе — при клике (для теста с мыши)
+document.addEventListener('click', e => {
+  // Не плодить лапки при клике на интерактивные элементы
+  if (e.target.closest('button, .opt, .dot, img, .slider-arrow')) return;
+  spawnOnePaw(e.clientX, e.clientY, 32);
+});
 </script>
 </body>
 </html>
